@@ -3,3 +3,4 @@ pandas
 transformers
 torch
 pydantic_settings
+pytest

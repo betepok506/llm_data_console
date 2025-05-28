@@ -1,8 +1,11 @@
 # analyzer.py
 import os
+import logging
 import pandas as pd
 from app.data_load import DataLoader
 from app.utils import format_answer
+
+logger = logging.getLogger(__name__)
 
 class DataAnalyzer:
     def __init__(self, model_loader, data_loader: DataLoader):
@@ -94,8 +97,7 @@ class DataAnalyzer:
         response = self.model_loader.llm(prompt)
         code = response[0]['generated_text']
 
-        print("🧠 Модель сгенерировала код:")
-        print(code)
+        logger.debug(" Сенерированный код: \n {code}")
 
         local_vars = {'df': self.data, 'result': None}
 
@@ -106,5 +108,5 @@ class DataAnalyzer:
                 result = "Мне не удалось получить ответ на ваш вопрос. Постарайтесь уточнить его."
             return format_answer(question, result)
         except Exception as e:
-            # return f"❌ Ошибка при выполнении кода: {str(e)}"
-            return f""
+            logger.error(f"Ошибка при выполнении запроса: {e}", exc_info=True)
+            return f"❌ Ошибка при выполнении кода: {str(e)}"
