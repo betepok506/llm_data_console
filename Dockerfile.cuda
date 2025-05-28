@@ -1,0 +1,20 @@
+# Базовый образ
+FROM nvidia/cuda:12.1.0-base
+
+ENV HTTP_PROXY="http://130.100.7.222:1082"
+ENV HTTPS_PROXY="http://130.100.7.222:1082"
+
+RUN echo 'Acquire::http::Proxy "http://130.100.7.222:1082";' > /etc/apt/apt.conf.d/00aptproxy
+
+# Установка Python
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Рабочая директория
+WORKDIR /app
+
+# Копируем зависимости
+COPY requirements.txt .
+RUN pip install -r requirements.txt
