@@ -1,11 +1,9 @@
 import os
 from openai import OpenAI
 
-os.environ["HTTP_PROXY"] = "http://130.100.7.222:1082"
-os.environ["HTTPS_PROXY"] = "http://130.100.7.222:1082"
-
-# API_KEY = os.getenv("API_KEY", "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")
-API_KEY = os.getenv("API_KEY", "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")
+os.environ["HTTP_PROXY"]
+os.environ["HTTPS_PROXY"]
+API_KEY = os.getenv("API_KEY")
 os.environ["OPENAI_API_KEY"] = API_KEY
 
 client = OpenAI(

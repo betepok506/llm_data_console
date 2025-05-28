@@ -10,7 +10,7 @@ class OpenAIModelLoader:
         api_key: str,
         model_name: str = "meta-llama/llama-3.3-8b-instruct:free",
         base_url: str = "https://openrouter.ai/api/v1",
-        max_tokens: int = 200,
+        max_tokens: int = 500,
     ):
         self.client = OpenAI(base_url=base_url, api_key=api_key)
         self.model_name = model_name
@@ -21,5 +21,6 @@ class OpenAIModelLoader:
             model=self.model_name,
             messages=[{"role": "user", "content": prompt}],
             max_tokens=self.max_tokens,
+            temperature=0.1
         )
         return [{"generated_text": response.choices[0].message.content}]
