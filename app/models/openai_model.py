@@ -1,10 +1,12 @@
 # app/openai_model.py
 
-import os
+
 from openai import OpenAI
 
+from app.models.base_model import ModelInterface
 
-class OpenAIModelLoader:
+
+class OpenAIModelLoader(ModelInterface):
     def __init__(
         self,
         api_key: str,
@@ -16,11 +18,11 @@ class OpenAIModelLoader:
         self.model_name = model_name
         self.max_tokens = max_tokens
 
-    def llm(self, prompt):
+    def generate(self, prompt):
         response = self.client.chat.completions.create(
             model=self.model_name,
             messages=[{"role": "user", "content": prompt}],
             max_tokens=self.max_tokens,
-            temperature=0.1
+            temperature=0.1,
         )
-        return [{"generated_text": response.choices[0].message.content}]
+        return {"generated_text": response.choices[0].message.content}
