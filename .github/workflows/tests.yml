@@ -1,4 +1,4 @@
-name: Run Tests & Coverage
+name: Run Tests & Upload Coverage
 
 on:
   push:
@@ -7,33 +7,31 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
       - name: Install Poetry
-        run: |
-          pip install poetry
+        run: pip install poetry
 
       - name: Install dependencies
         run: |
           poetry install --with dev,test
 
-      - name: Run tests and coverage
+      - name: Run tests and generate coverage report
         run: |
-          poetry run pytest --cov=app tests/
-          poetry run coverage xml
-          poetry run coverage html
+          make test
 
-      - name: Upload coverage report
+      - name: Upload coverage report as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: htmlcov
+          name: htmlcov-report
           path: htmlcov/
