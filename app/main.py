@@ -6,6 +6,8 @@ from app.analyzer import DataAnalyzer
 from app.core.config import settings
 from app.data_load import DataLoader
 from app.models.model_factory import get_model_loader
+from app.schema import MESSAGE_ERROR
+import time
 
 os.environ["OPENAI_API_KEY"] = settings.OPENAI_API_KEY
 
@@ -20,30 +22,41 @@ def main():
 
     print("Добро пожаловать в консольную систему анализа данных!")
     print("Введите 'выход' или 'exit', чтобы завершить работу.\n")
+    total_time = 0
+    num_requests = 0
     while True:
         user_input = input(" Задайте вопрос: ").strip()
 
         if user_input.lower() in ("выход", "exit", "quit"):
+            print(f"Количество запросов к модели: {num_requests}")
+            print(
+                f"Среднее время ответа модели: {total_time/(num_requests + 0.0001)}"
+            )
             print("\n До свидания!")
             break
 
         print("\n Обработка запроса...\n")
         try:
-            answer = analyzer.ask(user_input)
-        except Exception:
-            answer = "Модель в данный момент не доступна. \
-            Обратитесь к администратору"
+            start = time.time()
+            answer = analyzer.ask(user_input, return_code=True)
+            end = time.time()
+            num_requests += 1
+            total_time += end - start
+
+        except Exception as e:
+            answer = {}
+            answer["answer"] = MESSAGE_ERROR
 
         # Сохраняем историю пользовательских запросов и ответов на них
         with open("./data/history.json", "a", encoding="utf-8") as f:
             json.dump(
-                {"question": user_input, "answer": answer},
+                {"question": user_input, **answer},
                 f,
                 ensure_ascii=False,
             )
             f.write("\n")
 
-        print(f"{answer}\n")
+        print(f"{answer['answer']}\n")
 
 
 if __name__ == "__main__":

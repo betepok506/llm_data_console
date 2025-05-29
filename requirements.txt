@@ -1,6 +1,7 @@
 openai
 pandas
 pydantic_settings
+jsonlines
 pytest
 black
 flake8

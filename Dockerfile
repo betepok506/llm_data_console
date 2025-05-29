@@ -13,10 +13,18 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Poetry
+RUN apt clean && apt update && apt install curl -y
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3 && \
+    cd /usr/local/bin && \
+    ln -s /opt/poetry/bin/poetry
+
 # Рабочая директория
 WORKDIR /workspace
 
 # Копируем зависимости
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY pyproject.toml Makefile /workspace
+RUN poetry config virtualenvs.create false
+RUN pip install --upgrade pip
+RUN make install
 ENV PYTHONPATH=/workspace

@@ -1,0 +1,9 @@
+services:
+  freelancer-analyzer:
+    container_name: freelancer-analyzer
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/workspace
+    env_file: .env

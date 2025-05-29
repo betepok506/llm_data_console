@@ -45,6 +45,7 @@ python = "^3.10"
 openai = "*"
 pandas = "*"
 pydantic_settings = "*"
+jsonlines = "*"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -1,10 +1,7 @@
 # analyzer.py
-import logging
-
 from app.data_load import DataLoader
 from app.utils import format_answer
-
-logger = logging.getLogger(__name__)
+from app.schema import DATASET_SCHEMA_DESCRIPTION, MESSAGE_ERROR  # <-- Импорт схемы
 
 
 class DataAnalyzer:
@@ -12,42 +9,8 @@ class DataAnalyzer:
         self.model_loader = model_loader
         self.data = data_loader.data
 
-    def ask(self, question: str):
-        schema_desc = """
-        Датасет содержит следующие колонки:
-        - Freelancer_ID: уникальный идентификатор каждого фрилансера
-        - Job_Category: Первичная классификация выполняемой внештатной
-        работы. Тип данных string.
-        Примеры: Web Development, Data Entry, Content Writing
-        - Platform: Торговая площадка фрилансеров, на которой была выполнена
-        работа. Тип данных string. Примеры: Fiverr, Upwork, Toptal,
-        Freelancer, PeoplePerHour
-        - Experience_Level: Уровень профессионального опыта фрилансера.
-        Тип данных string. Примеры: Beginner, Intermediate, Expert
-        - Client_Region: Географическое положение клиента. Тип данных string.
-        Примеры: Asia, Europe, USA, Canada, UK, Australia, Middle East
-        - Payment_Method: Метод, используемый для проведения
-        финансовых операций. Тип данных string. Примеры: Bank Transfer,
-        PayPal, Mobile Banking, Crypto
-        - Job_Completed: Количество успешно завершенных проектов.
-        Тип данных integer. Примеры: 180, 218, 27
-        - Earnings_USD: Общая прибыль в долларах США. Тип данных float.
-        Примеры: 1620, 9078, 3455
-        - Hourly_Rate: Ставка почасовой оплаты труда фрилансера в
-        долларах США. Тип данных float. Примеры: 95.79, 86.38, 85.17
-        - Job_Success_Rate: Процент успешного выполнения заданий.
-        Тип данных float. Примеры: 68.73, 97.54, 86.6
-        - Client_Rating: Средняя оценка, данная клиентами
-        (по шкале от 1,0 до 5,0). Тип данных float. Примеры: 3.18, 3.44, 4.2
-        - Job_Duration_Days: Средний срок реализации проекта в днях.
-        Тип данных integer. Примеры: 1, 54, 46
-        - Project_Type: Классификация организации работ.
-        Тип данных string. Примеры: Fixed, Hourly
-        - Rehire_Rate: Процент клиентов, которые повторно нанимают фрилансера.
-        Тип данных float. Примеры: 40.19, 36.53, 74.05
-        - Marketing_Spend: Сумма инвестиций в продвижение платформы в
-        долларах США. Тип данных integer. Примеры: 53, 486, 489
-        """
+    def ask(self, question: str, return_code: bool = False):
+        schema_desc = DATASET_SCHEMA_DESCRIPTION
 
         prompt = f"""
         {schema_desc}
@@ -56,7 +19,7 @@ class DataAnalyzer:
         выполнить функцией eval().
         В ответном сообщении ты должен написать только код, который
         не должен быть никак отформатирован.
-        Скрипт должен быть написан с испольщованием библиотеки pandas.
+        Скрипт должен быть написан только с испольщованием библиотеки pandas.
         Ты должен написать код, который:
         - Считает датасет из каталога "./data/freelancer_earnings_bd.csv"
         - Произведет запрос к данным, учитывая при этом запросы пользователя
@@ -65,12 +28,16 @@ class DataAnalyzer:
         запросу пользователя чтобы его удобно читать.
         - Дополни ответ комментариями и сохрани его ввиде строки в
         переменную result
+        - Код должен использовать **только pandas** для анализа данных.
+        - Все вычисления должны быть завершены внутри кода.
+        - Не создавай тестовые данные, не используй mock-библиотеки.
 
         Категорически запрещается делать следующее:
         - Генерировать код который может модифицировать/удалять/изменять
         данные из файла.
         - Генерировать код который может удалять/переименовывать/копировать/перемещать
         набора данных.
+        - Генерировать какой либо код, кроме того, который будет взаимодействовать с набором данных pandas
 
         Если запрос запрещен, то выдай ответ "Я не могу выполнить запрос такого рода"
         Если ты не можешь выполнить запрос напиши - "Мне не удалось получить ответ на ваш вопрос.
@@ -121,17 +88,39 @@ class DataAnalyzer:
         response = self.model_loader.generate(prompt)
         code = response["generated_text"]
 
-        logger.debug(" Сенерированный код: \n {code}")
-
         local_vars = {"df": self.data, "result": None}
-
+        if not "./data/freelancer_earnings_bd.csv" in code:
+            return {
+                "answer": format_answer(question, MESSAGE_ERROR),
+                "code": None,
+            }
+            
         try:
-            exec(code, globals(), local_vars)
+            safe_builtins = {
+                "__import__": __import__,
+                "len": len,
+                "round": round,
+                "sum": sum,
+                "min": min,
+                "max": max,
+                "abs": abs,
+            }
+            globals_dict = {
+                "__builtins__": safe_builtins
+            }
+            exec(code, globals_dict, local_vars)
             result = local_vars.get("result", "Не удалось вычислить")
             if result is None:
-                result = "Мне не удалось получить ответ на ваш вопрос. \
-                    Постарайтесь уточнить его."
-            return format_answer(question, result)
+                result = MESSAGE_ERROR
+            if not return_code:
+                return {"answer": format_answer(question, result)}
+            else:
+                return {
+                    "answer": format_answer(question, result),
+                    "code": code,
+                }
         except Exception as e:
-            logger.error(f"Ошибка при выполнении запроса: {e}", exc_info=True)
-            return f"❌ Ошибка при выполнении кода: {str(e)}"
+            return {
+                "answer": MESSAGE_ERROR,
+                "code": None,
+            }
