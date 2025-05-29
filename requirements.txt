@@ -1,6 +1,6 @@
 openai
 pandas
-transformers
-torch
 pydantic_settings
 pytest
+black
+flake8

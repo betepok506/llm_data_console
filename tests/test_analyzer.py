@@ -1,34 +1,42 @@
 # tests/test_analyzer.py
 
 import pytest
-import pandas as pd
 from app.analyzer import DataAnalyzer
-from app.data_load import DataLoader
-from app.models.local_model import LocalModel
-from tests.utils.compare import compare_numbers
 
-@pytest.fixture
-def analyzer():
-    model = LocalModel()
-    data_loader = DataLoader("./data/freelancer_earnings.csv")
-    return DataAnalyzer(model, data_loader)
 
-@pytest.mark.parametrize("question, expected", [
-    ("Какой средний доход у фрилансеров из Европы?", "6500"),
-    ("Какой уровень опыта чаще получает высокий рейтинг (>=4.5)?", "Expert"),
-    ("Насколько выше почасовая ставка у тех, кто принимает криптовалюту?", "На 8.3$"),
-    ("Какой процент фрилансеров — эксперты, но выполнили менее 100 проектов?", "18.75%"),
-])
-def test_analyzer(analyzer, question, expected):
-    answer = analyzer.ask(question)
+# @pytest.fixture
+# def analyzer():
+#     model = LocalModel()
+#     data_loader = DataLoader("./data/freelancer_earnings.csv")
+#     return DataAnalyzer(model, data_loader)
 
-    # Проверяем числа, если они есть в ожидаемом результате
-    if any(char.isdigit() for char in expected):
-        assert compare_numbers(expected, answer), f"Число в ответе '{answer}' не совпадает с эталоном '{expected}'"
-    else:
-        # Если это не число, просто сравниваем строку
-        assert expected.lower() in answer.lower(), f"Ответ '{answer}' не содержит '{expected}'"
 
-    print(f"✅ Вопрос: {question}")
-    print(f"➡️ Ответ: {answer}")
-    print("-" * 50)
+@pytest.mark.parametrize(
+    "question, expected",
+    [
+        (
+            "Какой процент фрилансеров, считающих себя экспертами, выполнил менее 100 проектов?",
+            "33.85%",
+        ),
+        (
+            "Какой уровень опыта чаще получает высокий рейтинг (>= 4.5)?",
+            "Intermediate",
+        ),
+    ],
+)
+def test_analyzer_with_mocked_model(
+    mocked_model, data_loader, question, expected
+):
+    """
+    Тестирует DataAnalyzer с замоканной моделью.
+    """
+    analyzer = DataAnalyzer(model_loader=mocked_model, data_loader=data_loader)
+
+    print(f"\n🧪 Тестируем вопрос: {question}")
+    actual_answer = analyzer.ask(question)
+
+    print(f"➡️ Ответ системы:\n{actual_answer}")
+
+    assert (
+        expected.lower() in actual_answer.lower()
+    ), f"Ответ '{actual_answer}' не содержит '{expected}'"

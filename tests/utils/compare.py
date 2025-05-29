@@ -1,8 +1,10 @@
 import re
 
+
 def extract_numbers(text):
     # Находим все числа, включая дробные
     return list(map(float, re.findall(r"[-+]?\d*\.\d+|\d+", text)))
+
 
 def compare_numbers(expected_text, actual_text, tolerance=0.05):
     expected_numbers = extract_numbers(expected_text)
@@ -18,7 +20,9 @@ def compare_numbers(expected_text, actual_text, tolerance=0.05):
         for act_num in actual_numbers:
             diff = abs((act_num - exp_num) / exp_num)
             if diff <= tolerance:
-                print(f"✅ Число {act_num} близко к эталону {exp_num} (разница {diff*100:.2f}%)")
+                print(
+                    f"✅ Число {act_num} близко к эталону {exp_num} (разница {diff*100:.2f}%)"
+                )
                 found_match = True
                 results.append(True)
                 break
@@ -27,6 +31,7 @@ def compare_numbers(expected_text, actual_text, tolerance=0.05):
             results.append(False)
 
     return all(results)
+
 
 def exact_number_match(expected_text, actual_text):
     expected_numbers = extract_numbers(expected_text)
@@ -43,6 +48,7 @@ def exact_number_match(expected_text, actual_text):
 
     print("✅ Все числа совпадают точно")
     return True
+
 
 def get_percentage_diff(expected_text, actual_text):
     expected = extract_numbers(expected_text)

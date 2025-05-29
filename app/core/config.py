@@ -1,5 +1,6 @@
 import os
 from enum import Enum
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,6 +20,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         case_sensitive=True, env_file=os.path.expanduser("~/.env")
     )
+
 
 settings = Settings()
 os.environ["OPENAI_API_KEY"] = settings.OPENAI_API_KEY
