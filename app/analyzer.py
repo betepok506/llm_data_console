@@ -57,7 +57,6 @@ class DataAnalyzer:
             "Код:"
         )
 
-        print(prompt)
         response = self.model_loader.generate(prompt)
         code = response["generated_text"]
 
