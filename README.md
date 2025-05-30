@@ -14,5 +14,11 @@
 | transformers  | Для запуска LLM моделей локально |
 | torch | Для запуска LLM моделей локально |
 
+Отчет о подходе, его оценки: [Отчет](REPORT.md)
 
-[![Coverage](./coverage_badge.svg)](./htmlcov/index.html)
+# Инструкции
+
+[Инструкция по разворачиванию проекта](deployment.md)
+
+[Инструкция по разработке](deployment.md)
+

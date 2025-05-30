@@ -13,15 +13,43 @@ EXAMPLES = format_examples(PROMPT_CONFIG["examples"])
 
 
 class DataAnalyzer:
+    """
+    Класс для анализа данных на основе вопросов пользователя и
+    генерации ответов через LLM (например, OpenAI).
+    """
+
     def __init__(self, model_loader, data_loader: DataLoader):
+        """
+        Инициализирует объект DataAnalyzer.
+
+        Parameters
+        ----------
+        model_loader : ModelInterface
+            Объект, предоставляющий метод generate().
+        data_loader : DataLoader
+            Объект, предоставляющий доступ к данным.
+        """
         self.model_loader = model_loader
         self.data = data_loader.data
         self.prompt = None
 
-    def formate_prompt(self):
-        pass
-
     def ask(self, question: str, return_code: bool = False):
+        """
+        Генерирует Python-скрипт на основе вопроса и выполняет его.
+
+        Parameters
+        ----------
+        question : str
+            Вопрос пользователя на естественном языке.
+        return_code : bool, optional
+            Если True, возвращает и ответ, и сгенерированный код, by
+            default False
+
+        Returns
+        -------
+        dict
+            Словарь с ключом 'answer' и, опционально, 'code'.
+        """
         prompt = (
             f"{DATASET_SCHEMA_DESCRIPTION}\n"
             f"{INSTRUCTIONS}\n\n"
@@ -29,6 +57,7 @@ class DataAnalyzer:
             "Код:"
         )
 
+        print(prompt)
         response = self.model_loader.generate(prompt)
         code = response["generated_text"]
 
@@ -48,7 +77,7 @@ class DataAnalyzer:
                 "min": min,
                 "max": max,
                 "abs": abs,
-                "str": str
+                "str": str,
             }
             globals_dict = {"__builtins__": safe_builtins}
             exec(code, globals_dict, local_vars)
@@ -62,7 +91,7 @@ class DataAnalyzer:
                     "answer": format_answer(question, result),
                     "code": code,
                 }
-        except Exception as e:
+        except Exception:
             return {
                 "answer": MESSAGE_ERROR,
                 "code": None,

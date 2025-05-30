@@ -6,7 +6,19 @@ import jsonlines
 
 def execute_code(code_str, verbose=False):
     """
-    Безопасное выполнение Python-кода и получение переменной result.
+    Безопасно выполняет строку Python-кода внутри песочницы.
+
+    Parameters
+    ----------
+    code_str : str
+        Строка с исполняемым кодом.
+    verbose : bool, optional
+        Если True, выводит результат выполнения в консоль, by default False
+
+    Returns
+    -------
+    Any or None
+        Результат выполнения кода или None в случае ошибки.
     """
     globals_dict = {}
     locals_dict = {}
@@ -23,12 +35,38 @@ def execute_code(code_str, verbose=False):
 
 
 def load_jsonl(file_path):
+    """
+    Загружает JSONL-файл (по одной записи на строку).
+
+    Parameters
+    ----------
+    file_path : str
+        Путь к файлу с историей запросов.
+
+    Returns
+    -------
+    list of dict
+        Список словарей, каждый из которых представляет одну запись.
+    """
     with jsonlines.open(file_path) as reader:
         data = [obj for obj in reader]
     return data
 
 
 def load_validation_answers(file_path):
+    """
+    Загружает эталонные ответы из JSON-файла.
+
+    Parameters
+    ----------
+    file_path : str
+        Путь к JSON-файлу с эталонными ответами.
+
+    Returns
+    -------
+    dict
+        Словарь, где ключ — вопрос, значение — эталонный код.
+    """
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data
@@ -36,7 +74,19 @@ def load_validation_answers(file_path):
 
 def compare_results(predicted, expected):
     """
-    Сравнивает два результата — как строки или числа.
+    Сравнивает два результата — численно или по строковому представлению.
+
+    Parameters
+    ----------
+    predicted : Any
+        Предсказанный результат.
+    expected : Any
+        Ожидаемый результат.
+
+    Returns
+    -------
+    bool
+        True, если результаты совпадают; иначе False.
     """
     try:
         # Попробуем привести к float
@@ -57,11 +107,39 @@ def compare_results(predicted, expected):
 
 
 def extract_numbers(text):
-    # Находим все числа, включая дробные
+    """
+    Извлекает числа из строки.
+
+    Parameters
+    ----------
+    text : str
+        Текст, из которого нужно извлечь числа.
+
+    Returns
+    -------
+    list of float
+        Список чисел, извлечённых из строки.
+    """
     return list(map(float, re.findall(r"[-+]?\d*\.\d+|\d+", text)))
 
 
 def evaluate_answers(history_data, validation_data):
+    """
+    Оценивает точность работы модели на основе истории запросов и
+    эталонного набора.
+
+    Parameters
+    ----------
+    history_data : list of dict
+        Список записей из history.json.
+    validation_data : dict
+        Словарь с эталонными ответами.
+
+    Returns
+    -------
+    float
+        Процент корректных ответов (точность).
+    """
     correct_count = 0
     total_count = 0
 

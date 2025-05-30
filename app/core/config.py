@@ -1,4 +1,3 @@
-import os
 from enum import Enum
 
 from pydantic_settings import BaseSettings
@@ -25,4 +24,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-# os.environ["OPENAI_API_KEY"] = settings.OPENAI_API_KEY

@@ -7,6 +7,10 @@ from app.models.base_model import ModelInterface
 
 
 class OpenAIModelLoader(ModelInterface):
+    """
+    Реализация ModelInterface для взаимодействия с OpenAI API.
+    """
+
     def __init__(
         self,
         api_key: str,
@@ -19,6 +23,19 @@ class OpenAIModelLoader(ModelInterface):
         self.max_tokens = max_tokens
 
     def generate(self, prompt):
+        """
+        Генерирует ответ на основе промпта.
+
+        Parameters
+        ----------
+        prompt : str
+            Промпт, отправляемый модели.
+
+        Returns
+        -------
+        dict
+            Ответ модели в виде словаря с ключом "generated_text".
+        """
         response = self.client.chat.completions.create(
             model=self.model_name,
             messages=[{"role": "user", "content": prompt}],
