@@ -12,12 +12,11 @@ class ModeEnum(str, Enum):
 
 class Settings(BaseSettings):
     # PROJECT_NAME: str
-    HF_HOME: str = "./models"
-    USE_OPENAI: bool = os.getenv("USE_OPENAI")
-    PATH_TO_DATA: str = os.getenv("PATH_TO_DATA")
-    MODEL_NAME: str = os.getenv("MODEL_NAME")
-    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
-    PATH_TO_PROMPT_CONFIG: str = os.getenv("PATH_TO_PROMPT_CONFIG")
+    USE_OPENAI: bool = True
+    PATH_TO_DATA: str = "./data/freelancer_earnings_bd.csv"
+    MODEL_NAME: str = "meta-llama/llama-3-8b-instruct:free"
+    OPENAI_API_KEY: str | None = None
+    PATH_TO_PROMPT_CONFIG: str = "./app/prompts/prompt_config.json"
 
     class Config:
         env_file = ".env"

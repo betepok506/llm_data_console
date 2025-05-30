@@ -12,6 +12,4 @@ def get_model_loader(
 
         return OpenAIModelLoader(api_key=api_key)
     else:
-        from app.models.local_model import LocalModelLoader
-
-        return LocalModelLoader(model_name=model_name)
+        raise NotImplementedError("Other types of models are not supported at the moment.")

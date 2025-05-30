@@ -48,6 +48,7 @@ class DataAnalyzer:
                 "min": min,
                 "max": max,
                 "abs": abs,
+                "str": str
             }
             globals_dict = {"__builtins__": safe_builtins}
             exec(code, globals_dict, local_vars)
@@ -61,7 +62,7 @@ class DataAnalyzer:
                     "answer": format_answer(question, result),
                     "code": code,
                 }
-        except Exception:
+        except Exception as e:
             return {
                 "answer": MESSAGE_ERROR,
                 "code": None,

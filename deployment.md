@@ -1,16 +1,30 @@
 # Запуск сервиса
 
+Перед использование приложения необходимо создать файл `.env`.
+Сделать это можно скопировав `.env.example` и изменить значения переменных.
+
+Используемые переменные окружения:
+| Переменная | Описание |
+|----------|------------|
+| HF_HOME | Путь, куда будет загружаться модель HF |
+|  PATH_TO_DATA | Путь до набора данных |
+| PATH_TO_PROMPT_CONFIG | Путь до файла с промптом |
+| MODEL_NAME  | Название модели |
+| USE_OPENAI | True если использовать LLM от OpenAI |
+| HTTP_PROXY | http прокси если необходимо (можно оставить пустыми) |
+| HTTPS_PROXY | https прокси если необходимо (можно оставить пустыми) |
+| OPENAI_API_KEY | API ключ openai |
 
 ## Развертывание
 
 Сборка и запуск сервиса:
 
+Сборка образа:
 ```
-docker compose -p freelancer-analyzer up --build
+docker build -t llm_data_console .
+```
 
+Запуск:
 ```
-Остановка сервиса:
-
-```
-docker-compose down
+docker run -it --rm -v $(pwd):/workspace -w /workspace llm_data_console python3 app/main.py
 ```
