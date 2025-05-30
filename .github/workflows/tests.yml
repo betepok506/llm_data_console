@@ -30,6 +30,7 @@ jobs:
 
       - name: Run tests and generate coverage report
         run: |
+          export PYTHONPATH=$(pwd)
           make test
 
       - name: Upload coverage report as artifact
