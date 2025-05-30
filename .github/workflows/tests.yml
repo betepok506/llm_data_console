@@ -28,10 +28,6 @@ jobs:
           poetry config virtualenvs.path .venv
           make install
 
-      - name: Install dependencies
-        run: |
-          source ./venv/Scripts/activate
-
       - name: Run tests and generate coverage report
         run: |
           make test
