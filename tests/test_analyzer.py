@@ -15,7 +15,8 @@ from app.analyzer import DataAnalyzer
     "question, expected",
     [
         (
-            "Какой процент фрилансеров, считающих себя экспертами, выполнил менее 100 проектов?",
+            "Какой процент фрилансеров, считающих себя экспертами, \
+выполнил менее 100 проектов?",
             "33.85%",
         ),
         (
@@ -33,7 +34,7 @@ def test_analyzer_with_mocked_model(
     analyzer = DataAnalyzer(model_loader=mocked_model, data_loader=data_loader)
 
     print(f"\n🧪 Тестируем вопрос: {question}")
-    actual_answer = analyzer.ask(question)
+    actual_answer = analyzer.ask(question)["answer"]
 
     print(f"➡️ Ответ системы:\n{actual_answer}")
 

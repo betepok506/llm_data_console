@@ -20,3 +20,17 @@ venv/Scripts/activate
 Нажмите `Ctrl + Shift + P`
 И выберите `Dev containers: Rebuild and Reopen in Container`
 После чего соберется Devcontainer
+
+# Зависимости
+
+
+# Линтер
+
+Для линковки кода выполните команду `make lint`
+Для этого используются `black`, `flake8`, `ruff`
+
+# Форматирование кода
+
+Для форматирования кода выполните команду `make fmt`
+
+# Документирование

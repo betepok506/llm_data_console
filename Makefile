@@ -43,7 +43,7 @@ fmt:              ## Format code using black & isort.
 	$(ENV_PREFIX)isort $(SERVICE_NAME)/
 	$(ENV_PREFIX)black $(SERVICE_NAME)/
 	$(ENV_PREFIX)black tests/
-	$(ENV_PREFIX)ruff check --fix --unsafe-fixes $(SERVICE_NAME)/ tests
+	$(ENV_PREFIX)ruff check --fix $(SERVICE_NAME)/ tests
 
 
 .PHONY: lint

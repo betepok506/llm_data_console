@@ -1,13 +1,13 @@
 # main.py
 import json
 import os
+import time
 
 from app.analyzer import DataAnalyzer
 from app.core.config import settings
 from app.data_load import DataLoader
 from app.models.model_factory import get_model_loader
-from app.schema import MESSAGE_ERROR
-import time
+from app.responses import MESSAGE_ERROR
 
 os.environ["OPENAI_API_KEY"] = settings.OPENAI_API_KEY
 
@@ -30,7 +30,8 @@ def main():
         if user_input.lower() in ("выход", "exit", "quit"):
             print(f"Количество запросов к модели: {num_requests}")
             print(
-                f"Среднее время ответа модели: {total_time/(num_requests + 0.0001)}"
+                f"Среднее время ответа модели: \
+                    {total_time/(num_requests + 0.0001)}"
             )
             print("\n До свидания!")
             break
@@ -43,7 +44,7 @@ def main():
             num_requests += 1
             total_time += end - start
 
-        except Exception as e:
+        except Exception:
             answer = {}
             answer["answer"] = MESSAGE_ERROR
 

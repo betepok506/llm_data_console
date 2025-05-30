@@ -1,0 +1,4 @@
+{
+    "Какой процент фрилансеров, считающих себя экспертами, выполнил менее 100 проектов?": "import pandas as pd\n\ndf = pd.read_csv(\"./data/freelancer_earnings_bd.csv\")\nexperts = df[df[\"Experience_Level\"] == \"Expert\"]\nexperts_less_100 = experts[experts[\"Job_Completed\"] < 100]\npercentage = len(experts_less_100) / len(experts) * 100 if len(experts) > 0 else 0\nresult = f\"Процент экспертов, выполнивших менее 100 проектов: {percentage:.2f}%\"",
+    "Какой уровень опыта чаще получает высокий рейтинг (>= 4.5)?": "import pandas as pd\n\ndf = pd.read_csv(\"./data/freelancer_earnings_bd.csv\")\nhigh_rated = df[df[\"Client_Rating\"] >= 4.5]\nexperience_counts = high_rated[\"Experience_Level\"].value_counts()\nmost_common_exp_level = experience_counts.idxmax() if not experience_counts.empty else \"Нет данных\"\nresult = f\"Чаще всего высокий рейтинг получают фрилансеры уровня: {most_common_exp_level}\""
+}

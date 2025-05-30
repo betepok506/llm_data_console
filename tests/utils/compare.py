@@ -21,7 +21,8 @@ def compare_numbers(expected_text, actual_text, tolerance=0.05):
             diff = abs((act_num - exp_num) / exp_num)
             if diff <= tolerance:
                 print(
-                    f"✅ Число {act_num} близко к эталону {exp_num} (разница {diff*100:.2f}%)"
+                    f"✅ Число {act_num} близко к эталону {exp_num} \
+(разница {diff*100:.2f}%)"
                 )
                 found_match = True
                 results.append(True)

@@ -3,25 +3,22 @@
 import pytest
 from unittest.mock import MagicMock
 from app.core.config import settings
+import json
+import os
 
-MOCK_RESPONSES = {
-    "Какой процент фрилансеров, считающих себя экспертами, выполнил менее 100 проектов?": """
-import pandas as pd
-df = pd.read_csv("./data/freelancer_earnings_bd.csv")
-experts = df[df["Experience_Level"] == "Expert"]
-experts_less_100 = experts[experts["Job_Completed"] < 100]
-percentage = len(experts_less_100) / len(experts) * 100 if len(experts) > 0 else 0
-result = f"Процент экспертов, выполнивших менее 100 проектов: {percentage:.2f}%"
-""",
-    "Какой уровень опыта чаще получает высокий рейтинг (>= 4.5)?": """
-import pandas as pd
-df = pd.read_csv("./data/freelancer_earnings_bd.csv")
-high_rated = df[df["Client_Rating"] >= 4.5]
-experience_counts = high_rated["Experience_Level"].value_counts()
-most_common_exp_level = experience_counts.idxmax() if not experience_counts.empty else "Нет данных"
-result = f"Чаще всего высокий рейтинг получают фрилансеры уровня: {most_common_exp_level}"
-""",
-}
+# Путь к файлу с моками
+MOCK_RESPONSES_PATH = "./tests/fixtures/mock_responses.json"
+
+
+# Загружаем моки из файла
+def load_mock_responses():
+    if not os.path.exists(MOCK_RESPONSES_PATH):
+        raise FileNotFoundError(f"Файл {MOCK_RESPONSES_PATH} не найден")
+    with open(MOCK_RESPONSES_PATH, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+MOCK_RESPONSES = load_mock_responses()
 
 
 @pytest.fixture

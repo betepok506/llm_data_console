@@ -1,12 +1,8 @@
-import pandas as pd
-
-from app.analyzer import DataAnalyzer
-from app.core.config import settings
-from app.data_load import DataLoader
-from app.models.model_factory import get_model_loader
-import jsonlines
 import json
 import re
+
+import jsonlines
+
 
 def execute_code(code_str, verbose=False):
     """
@@ -25,15 +21,18 @@ def execute_code(code_str, verbose=False):
         print(f"❌ Ошибка выполнения: {e}")
         return None
 
+
 def load_jsonl(file_path):
-    with jsonlines.open(file_path) as reader: 
+    with jsonlines.open(file_path) as reader:
         data = [obj for obj in reader]
     return data
+
 
 def load_validation_answers(file_path):
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data
+
 
 def compare_results(predicted, expected):
     """
@@ -41,16 +40,26 @@ def compare_results(predicted, expected):
     """
     try:
         # Попробуем привести к float
-        predicted_num = float(str(predicted).strip('%').replace(',', '.')) if predicted else None
-        expected_num = float(str(expected).strip('%').replace(',', '.')) if expected else None
+        predicted_num = (
+            float(str(predicted).strip("%").replace(",", "."))
+            if predicted
+            else None
+        )
+        expected_num = (
+            float(str(expected).strip("%").replace(",", "."))
+            if expected
+            else None
+        )
         return abs(predicted_num - expected_num) < 1e-2
-    except:
+    except Exception:
         # Если не число — сравниваем как строки
         return str(predicted).strip() == str(expected).strip()
+
 
 def extract_numbers(text):
     # Находим все числа, включая дробные
     return list(map(float, re.findall(r"[-+]?\d*\.\d+|\d+", text)))
+
 
 def evaluate_answers(history_data, validation_data):
     correct_count = 0
@@ -72,15 +81,18 @@ def evaluate_answers(history_data, validation_data):
         generated_result = execute_code(generated_code)
         expected_result = execute_code(reference_code)
 
-        print(f'Сгенерированный результат: {generated_result}')
+        print(f"Сгенерированный результат: {generated_result}")
         if generated_result.find(":") != -1:
             generated_result = generated_result.split(":", 1)[1]
-            
+
         generated_result = extract_numbers(generated_result)[0]
         # Сравниваем результаты
         match = compare_results(generated_result, expected_result)
 
-        print(f"Извлеченный ответ из сгенерированного результата: {generated_result}")
+        print(
+            f"Извлеченный ответ из сгенерированного результата:\
+                {generated_result}"
+        )
         print(f"Эталонный результат: {expected_result}")
         print(f"Результат совпадает: {'✅' if match else '❌'}")
 
@@ -98,4 +110,3 @@ if __name__ == "__main__":
     validation_data = load_validation_answers("./data/validate_answer.json")
 
     evaluate_answers(history_data, validation_data)
-
