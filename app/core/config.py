@@ -25,4 +25,4 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-os.environ["OPENAI_API_KEY"] = settings.OPENAI_API_KEY
+# os.environ["OPENAI_API_KEY"] = settings.OPENAI_API_KEY
